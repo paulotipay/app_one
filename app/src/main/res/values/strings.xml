@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">app one</string>
+    <string name="login">Log in</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="linkedin_sign_in">LinkedIn Sign In</string>
+    <string name="google_sign_in">Google Sign In</string>
+    <string name="facebook_sign_in">Facebook Sign In</string>
+    <string name="no_account_sign_up">No Account? Sign Up</string>
+</resources>
