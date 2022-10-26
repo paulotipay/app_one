@@ -14,14 +14,25 @@
         android:theme="@style/Theme.AppOne"
         tools:targetApi="31">
         <activity
+            android:name=".LifeCycleActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".LifeCycleActivity"
+            android:exported="true">
+
+        </activity>
+        <activity
             android:name=".ProductDetailActivity"
             android:exported="false" />
         <activity
             android:name=".LoginV2"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".HomeActivity"
-            android:exported="true">
+            android:exported="true"></activity>
+        <activity
+            android:name=".TestActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,13 +40,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TestActivity"
-            android:exported="true" />
-        <activity
             android:name=".SplashActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true" />
