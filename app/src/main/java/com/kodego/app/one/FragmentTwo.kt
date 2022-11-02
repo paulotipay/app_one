@@ -16,7 +16,10 @@ class FragmentTwo : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentTwoBinding.inflate(layoutInflater)
-        // Inflate the layout for this fragment
+        var textFromParent = arguments?.getString("data2")
+        binding.tvFragment2.text = textFromParent
+
+
         return binding.root
     }
 
