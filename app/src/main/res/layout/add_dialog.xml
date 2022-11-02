@@ -6,17 +6,44 @@
     android:layout_height="wrap_content"
     android:padding="10dp">
 
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="318dp"
+        android:layout_height="156dp"
+        android:background="#EF2323"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:minHeight="48dp"
+            app:srcCompat="@drawable/ic_camera"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <ImageView
+            android:id="@+id/imgPic"
+            android:scaleType="fitXY"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:srcCompat="@tools:sample/avatars" />
+    </FrameLayout>
+
     <EditText
         android:id="@+id/etAddDialogName"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Item Name"
+        android:layout_marginTop="15dp"
         android:inputType="textPersonName"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
 
     <EditText
         android:id="@+id/etAddDialogDesc"
@@ -64,4 +91,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spnImage" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,7 @@
 package com.kodego.app.one
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +23,8 @@ class ProductAdapter(val products:MutableList<Products>):RecyclerView.Adapter<Pr
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         holder.binding.apply {
-            imgProduct.setImageResource(products[position].imageName)
+            var bitmap: Bitmap? = BitmapFactory.decodeByteArray(products[position].imageName,0,products[position].imageName.size)
+            imgProduct.setImageBitmap(bitmap)
             tvItemName.text = products[position].itemName
             tvDescription.text = products[position].itemDescription
             tvQuantity.text = products[position].quantity.toString()
