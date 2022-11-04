@@ -1,11 +1,26 @@
 package com.kodego.app.one
 
+import android.Manifest
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
+import android.provider.Settings
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import android.widget.Toast.makeText
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.tabs.TabLayout
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import com.kodego.app.one.databinding.ActivityTestBinding
 
 class TestActivity : AppCompatActivity() {
@@ -17,63 +32,94 @@ class TestActivity : AppCompatActivity() {
         binding = ActivityTestBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var myData1 = "This is data 1"
-        var myData2 = "This is data 2"
-        var myData3 = "This is data 3"
-
-
-        val fragmentOne = FragmentOne()
-        val fragmentTwo = FragmentTwo()
-        val fragmentThree = FragmentThree()
-
-        var bundle1 = Bundle()
-        bundle1.putString("data1", myData1)
-        fragmentOne.arguments = bundle1
-
-        var bundle2 = Bundle()
-        bundle2.putString("data2", myData2)
-        fragmentTwo.arguments = bundle2
-
-        var bundle3 = Bundle()
-        bundle3.putString("data3", myData3)
-        fragmentThree.arguments = bundle3
-
-        //initial fragment
-        supportFragmentManager.beginTransaction().apply{
-            replace(binding.fragmentMain.id,fragmentOne)
-            commit()
+        binding.btnCamera.setOnClickListener(){
+            showCamera()
         }
 
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if(tab?.position == 0){
-                    supportFragmentManager.beginTransaction().apply{
-                        replace(binding.fragmentMain.id,fragmentOne)
-                        commit()
-                    }
-                }else if(tab?.position == 1) {
-                    supportFragmentManager.beginTransaction().apply{
-                        replace(binding.fragmentMain.id,fragmentTwo)
-                        commit()
-                    }
-                }else if(tab?.position == 2) {
-                    supportFragmentManager.beginTransaction().apply{
-                        replace(binding.fragmentMain.id,fragmentThree)
+        binding.btnGallery.setOnClickListener(){
+            showGallery()
+        }
 
-                        commit()
-                    }
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-
-            }
-
-        })
     }
 
+    private fun showGallery() {
+        Dexter.withContext(this).withPermission(
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ).withListener(object: PermissionListener{
+            override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                galleryLauncher.launch(galleryIntent)
+            }
+
+            override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                Toast.makeText(applicationContext,"Gallery Permission Denied",Toast.LENGTH_SHORT).show()
+                gotoSettings()
+            }
+
+            override fun onPermissionRationaleShouldBeShown(
+                request: PermissionRequest?,
+                token: PermissionToken?
+            ) {
+                token?.continuePermissionRequest()
+            }
+
+        }).onSameThread().check()
+    }
+
+    private fun showCamera() {
+        Dexter.withContext(this).withPermission(
+            Manifest.permission.CAMERA
+        ).withListener(object : PermissionListener{
+            override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//                startActivity(cameraIntent)
+                cameraLauncher.launch(cameraIntent)
+                Toast.makeText(applicationContext,"Permission Granted",Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                Toast.makeText(applicationContext,"Permission Denied",Toast.LENGTH_SHORT).show()
+                gotoSettings()
+            }
+
+            override fun onPermissionRationaleShouldBeShown(
+                request: PermissionRequest?,
+                token: PermissionToken?
+            ) {
+                token?.continuePermissionRequest()
+            }
+
+        }).onSameThread().check()
+    }
+
+    private fun gotoSettings() {
+        AlertDialog.Builder(this).setMessage("It seems that your permission has been denied. Go to settings to enable permission.")
+            .setPositiveButton("Go to Settings"){ dialog, item ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                var uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivity(intent)
+            }.setNegativeButton("Cancel"){ dialog, item ->
+                dialog.dismiss()
+            }.show()
+    }
+
+    //handles images from the camera
+    val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+        if(result.resultCode == Activity.RESULT_OK){
+            result.data?.extras.let{
+                val image : Bitmap = result.data?.extras?.get("data") as Bitmap
+                binding.ivImage.setImageBitmap(image)
+            }
+        }
+    }
+    //handles images from gallery
+    val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if(result.resultCode == Activity.RESULT_OK){
+            result.data?.let{
+                val selectedImage = result.data?.data
+                binding.ivImage.setImageURI(selectedImage)
+            }
+        }
+    }
 }
